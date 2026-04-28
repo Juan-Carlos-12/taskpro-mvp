@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TaskPro – Gestión de Tareas</title>
+        <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+    <body>
+
+        <!-- ════════════════ AUTH VIEW ════════════════ -->
+        <div id="auth-view" class="view active">
+            <div class="auth-card">
+                <div class="logo">TASK<span>PRO</span></div>
+                <p class="auth-subtitle">Gestión de tareas · MVP v3.1</p>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchTab('login')">Iniciar sesión</button>
+                    <button class="auth-tab" onclick="switchTab('register')">Registrarse</button>
+                </div>
+                <div id="auth-error" class="error-msg"></div>
+                <!-- LOGIN -->
+                <div id="login-form">
+                    <div class="form-group">
+                        <label>Correo electrónico</label>
+                        <input type="email" id="login-email" placeholder="usuario@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="login-pass" placeholder="••••••••">
+                    </div>
+                    <button class="btn btn-primary" onclick="doLogin()">Entrar →</button>
+                    <p style="text-align:center; margin-top:1rem; font-size:0.8rem; color:var(--text-muted)">
+                        Demo: cualquier email + contraseña
+                    </p>
+                </div>
+                <!-- REGISTER -->
+                <div id="register-form" style="display:none">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="reg-name" placeholder="Tu nombre">
+                    </div>
+                    <div class="form-group">
+                        <label>Correo electrónico</label>
+                        <input type="email" id="reg-email" placeholder="usuario@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+                    </div>
+                    <button class="btn btn-primary" onclick="doRegister()">Crear cuenta →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════ APP VIEW ════════════════ -->
+        <div id="app-view" class="view">
+            <header class="topbar">
+                <div class="topbar-logo">TASK<span>PRO · MVP</span></div>
+                <nav class="topbar-nav">
+                    <button class="nav-tab active" id="tab-tasks" onclick="switchAppTab('tasks')">// tareas</button>
+                    <button class="nav-tab" id="tab-focus" onclick="switchAppTab('focus')">◎ concentración</button>
+                </nav>
+                <div class="topbar-right">
+                    <div class="user-badge">
+                        <div class="avatar" id="user-avatar">?</div>
+                        <span class="user-name" id="user-display">Usuario</span>
+                    </div>
+                    <button class="btn-logout" onclick="doLogout()">← Salir</button>
+                </div>
+            </header>
+
+            <main class="app-main">
+
+                <!-- STATS -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total tareas</div>
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-sub">registradas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pendientes</div>
+                        <div class="stat-value" id="stat-pending" style="color:var(--warn)">0</div>
+                        <div class="stat-sub">por completar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Completadas</div>
+                        <div class="stat-value" id="stat-done" style="color:var(--blue)">0</div>
+                        <div class="stat-sub">finalizadas</div>
+                    </div>
+                </div>
+
+                <!-- BARRA DE PROGRESO -->
+                <div class="progress-wrap">
+                    <div class="progress-header">
+                        <span class="progress-label">Progreso general</span>
+                        <span class="progress-pct" id="progress-pct">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <!-- TOOLBAR -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <span class="section-title">// tareas</span>
+                        <div class="filter-pills">
+                            <button class="pill active" onclick="setFilter('todas', this)">Todas</button>
+                            <button class="pill" onclick="setFilter('pendiente', this)">Pendientes</button>
+                            <button class="pill" onclick="setFilter('completada', this)">Hechas</button>
+                            <button class="pill pill-overdue" onclick="setFilter('vencida', this)">⚠ Vencidas</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="toggleAddPanel()">
+                        <span id="add-btn-label">+ Nueva tarea</span>
+                    </button>
+                </div>
+
+                <!-- BUSCADOR + FILTRO CATEGORÍA -->
+                <div class="search-bar">
+                    <div class="search-input-wrap">
+                        <span class="search-icon">⌕</span>
+                        <input type="text" id="search-input" placeholder="Buscar tarea…" oninput="renderTasks()">
+                    </div>
+                    <select id="filter-cat" onchange="renderTasks()">
+                        <option value="">Todas las categorías</option>
+                        <option value="personal">Personal</option>
+                        <option value="trabajo">Trabajo</option>
+                        <option value="estudio">Estudio</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+
+                <!-- ADD TASK PANEL -->
+                <div class="add-task-panel" id="add-panel">
+                    <div class="panel-header">▸ Nueva tarea</div>
+                    <div class="add-task-grid">
+                        <div class="form-group full">
+                            <label>Título</label>
+                            <input type="text" id="new-title" placeholder="¿Qué hay que hacer?">
+                        </div>
+                        <div class="form-group full">
+                            <label>Descripción (opcional)</label>
+                            <input type="text" id="new-desc" placeholder="Detalles adicionales…">
+                        </div>
+                        <div class="form-group">
+                            <label>Prioridad</label>
+                            <select id="new-priority">
+                                <option value="baja">Baja</option>
+                                <option value="media" selected>Media</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <select id="new-cat">
+                                <option value="personal">Personal</option>
+                                <option value="trabajo">Trabajo</option>
+                                <option value="estudio">Estudio</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha límite</label>
+                            <input type="date" id="new-date">
+                        </div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="btn btn-primary btn-sm" onclick="addTask()" style="width:auto">Guardar tarea</button>
+                        <button class="btn btn-ghost btn-sm" onclick="toggleAddPanel()">Cancelar</button>
+                    </div>
+                </div>
+
+                <!-- TASK LIST -->
+                <div class="task-list" id="task-list"></div>
+
+                <!-- EMPTY STATE -->
+                <div class="empty-state" id="empty-state" style="display:none">
+                    <div class="empty-icon">◻</div>
+                    <div class="empty-title">Sin tareas</div>
+                    <div class="empty-sub">Pulsa "+ Nueva tarea" para empezar</div>
+                </div>
+
+            </main>
+
+            <!-- ════ FOCUS TAB ════ -->
+            <div class="focus-panel" id="focus-panel">
+
+                <!-- POMODORO -->
+                <div class="focus-col">
+                    <div class="focus-card pomodoro-card">
+                        <div class="focus-card-header">◎ temporizador pomodoro</div>
+
+                        <!-- Mode selector -->
+                        <div class="pomo-modes">
+                            <button class="pomo-mode active" id="mode-work" onclick="setMode('work')">Trabajo <span>25 min</span></button>
+                            <button class="pomo-mode" id="mode-short" onclick="setMode('short')">Descanso corto <span>5 min</span></button>
+                            <button class="pomo-mode" id="mode-long" onclick="setMode('long')">Descanso largo <span>15 min</span></button>
+                        </div>
+
+                        <!-- SVG Ring timer -->
+                        <div class="pomo-ring-wrap">
+                            <svg class="pomo-ring" viewBox="0 0 200 200">
+                                <circle class="ring-track" cx="100" cy="100" r="88"/>
+                                <circle class="ring-progress" id="ring-progress" cx="100" cy="100" r="88"
+                                    stroke-dasharray="553"
+                                    stroke-dashoffset="0"/>
+                            </svg>
+                            <div class="pomo-display">
+                                <div class="pomo-time" id="pomo-time">25:00</div>
+                                <div class="pomo-label" id="pomo-label">Modo trabajo</div>
+                            </div>
+                        </div>
+
+                        <!-- Controls -->
+                        <div class="pomo-controls">
+                            <button class="pomo-btn" onclick="resetTimer()" title="Reiniciar">↺</button>
+                            <button class="pomo-btn pomo-play" id="pomo-play" onclick="toggleTimer()">▶</button>
+                            <button class="pomo-btn" onclick="skipTimer()" title="Saltar">⏭</button>
+                        </div>
+
+                        <!-- Session counter -->
+                        <div class="pomo-sessions">
+                            <span class="pomo-sessions-label">Sesiones completadas:</span>
+                            <div class="pomo-dots" id="pomo-dots">
+                                <span class="pomo-dot"></span>
+                                <span class="pomo-dot"></span>
+                                <span class="pomo-dot"></span>
+                                <span class="pomo-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MUSIC PLAYER -->
+                <div class="focus-col">
+                    <div class="focus-card music-card">
+                        <div class="focus-card-header">♫ música de concentración</div>
+
+                        <!-- Track list -->
+                        <div class="track-list" id="track-list"></div>
+
+                        <!-- Player bar -->
+                        <div class="player-bar">
+                            <div class="player-track-info">
+                                <div class="player-icon" id="player-icon">🎵</div>
+                                <div>
+                                    <div class="player-title" id="player-title">Selecciona una pista</div>
+                                    <div class="player-sub" id="player-sub">—</div>
+                                </div>
+                            </div>
+                            <div class="player-controls">
+                                <button class="player-btn" onclick="prevTrack()">⏮</button>
+                                <button class="player-btn player-play" id="music-play" onclick="toggleMusic()">▶</button>
+                                <button class="player-btn" onclick="nextTrack()">⏭</button>
+                            </div>
+                            <div class="player-volume">
+                                <span class="vol-icon">🔊</span>
+                                <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.6" oninput="setVolume(this.value)">
+                            </div>
+                        </div>
+
+                        <!-- Visualizer bars -->
+                        <div class="music-viz" id="music-viz">
+                            <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
+                            <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
+                            <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
+                            <div class="viz-bar"></div><div class="viz-bar"></div><div class="viz-bar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Focus tip -->
+                    <div class="focus-tip-card">
+                        <div class="focus-tip-header">💡 consejo de sesión</div>
+                        <div class="focus-tip-body" id="focus-tip">Carga una pista e inicia el temporizador para comenzar tu sesión de concentración.</div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="modal-overlay" id="edit-modal">
+            <div class="modal">
+                <div class="modal-title">▸ Editar tarea</div>
+                <input type="hidden" id="edit-id">
+                <div class="modal-grid">
+                    <div class="form-group full">
+                        <label>Título</label>
+                        <input type="text" id="edit-title">
+                    </div>
+                    <div class="form-group full">
+                        <label>Descripción</label>
+                        <input type="text" id="edit-desc">
+                    </div>
+                    <div class="form-group">
+                        <label>Prioridad</label>
+                        <select id="edit-priority">
+                            <option value="baja">Baja</option>
+                            <option value="media">Media</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="edit-cat">
+                            <option value="personal">Personal</option>
+                            <option value="trabajo">Trabajo</option>
+                            <option value="estudio">Estudio</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha límite</label>
+                        <input type="date" id="edit-date">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary btn-sm" onclick="saveEdit()" style="width:auto">Guardar cambios</button>
+                    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container" id="toast-container"></div>
+
+        <script src="js/app.js"></script>
+    </body>
+</html>
