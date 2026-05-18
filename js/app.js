@@ -682,7 +682,7 @@ function updateDots() {
 }
 
 // ════════ MUSIC PLAYER ════════
-const PLAYLISTS = {
+var PLAYLISTS = {
     'youtube-lofi':      'https://www.youtube.com/embed/jfKfPfyJRdk',
     'youtube-lofi2':     'https://www.youtube.com/embed/5qap5aO4i9A',
     'youtube-classical': 'https://www.youtube.com/embed/mPZkdNFkNps',
