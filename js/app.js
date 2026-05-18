@@ -683,15 +683,12 @@ function updateDots() {
 
 // ════════ MUSIC PLAYER ════════
 const PLAYLISTS = {
-    'spotify-lofi': 'https://open.spotify.com/embed/playlist/0vvXsWCC9xrXsKd4euo4K2?utm_source=gene' +
-            'rator&theme=0',
-    'spotify-focus': 'https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKCadgRdKQ?utm_source=gene' +
-            'rator&theme=0',
-    'spotify-ambient': 'https://open.spotify.com/embed/playlist/37i9dQZF1DX3Ogo9pFvBkY?utm_source=gene' +
-            'rator&theme=0',
-    'youtube-lofi': 'https://www.youtube.com/embed/jfKfPfyJRdk',
+    'youtube-lofi':      'https://www.youtube.com/embed/jfKfPfyJRdk',
+    'youtube-lofi2':     'https://www.youtube.com/embed/5qap5aO4i9A',
     'youtube-classical': 'https://www.youtube.com/embed/mPZkdNFkNps',
-    'youtube-nature': 'https://www.youtube.com/embed/eKFTSSKCzWA'
+    'youtube-nature':    'https://www.youtube.com/embed/eKFTSSKCzWA',
+    'youtube-focus':     'https://www.youtube.com/embed/WPni755-Krg',
+    'youtube-ambient':   'https://www.youtube.com/embed/DWcJFNfaw9c',
 };
 
 function loadPlaylist(key, el) {
