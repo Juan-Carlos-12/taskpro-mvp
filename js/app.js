@@ -511,10 +511,10 @@ function formatDate(s) {
 document
     .getElementById('edit-modal')
     .addEventListener('click', function (e) {
-        if (e.target === this) 
+        if (e.target === this) {
             closeModal();
         }
-    );
+    });
 document.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
         const lf = document.getElementById('login-form');
