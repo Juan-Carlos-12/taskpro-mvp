@@ -523,6 +523,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 doLogin();
         }
     });
+    buildTrackList();
+    updateTimerDisplay();
     init();
 });
 
@@ -777,6 +779,3 @@ function showFocusTip(type) {
         .getElementById('focus-tip')
         .textContent = tip;
 }
-
-buildTrackList();
-updateTimerDisplay();
