@@ -508,20 +508,23 @@ function formatDate(s) {
     return `${d}/${m}/${y}`;
 }
 
-document
-    .getElementById('edit-modal')
-    .addEventListener('click', function (e) {
-        if (e.target === this) {
-            closeModal();
+document.addEventListener('DOMContentLoaded', function () {
+    document
+        .getElementById('edit-modal')
+        .addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            const lf = document.getElementById('login-form');
+            if (lf && lf.style.display !== 'none' && document.getElementById('auth-view').classList.contains('active'))
+                doLogin();
         }
     });
-document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-        const lf = document.getElementById('login-form');
-        if (lf.style.display !== 'none' && document.getElementById('auth-view').classList.contains('active')) 
-            doLogin();
-        }
-    });
+    init();
+});
 
 // ════════ APP TAB SWITCHING ════════
 function switchAppTab(tab) {
@@ -777,4 +780,3 @@ function showFocusTip(type) {
 
 buildTrackList();
 updateTimerDisplay();
-init();
